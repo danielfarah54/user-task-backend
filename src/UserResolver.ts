@@ -32,7 +32,14 @@ export class UserResolver {
 
   @Query(() => User)
   async user(@Arg("id") userId: number) {
-    return await User.findOne({ id: userId });
+    let user = null;
+    try {
+      user = await User.findOneOrFail({ id: userId });
+    } catch (error) {
+      console.log(error);
+      throw new Error("could not find user");
+    }
+    return user;
   }
 
   @UseMiddleware(isAuth)
@@ -77,8 +84,8 @@ export class UserResolver {
     @Arg("name") name: string
   ) {
     const user = await User.findOne({ id });
-    if(!user) {
-      throw new Error('user not found')
+    if (!user) {
+      throw new Error("user not found");
     }
 
     try {
@@ -88,7 +95,24 @@ export class UserResolver {
       });
     } catch (error) {
       console.error(error);
-      throw new Error('fail to update user')
+      throw new Error("fail to update user");
+    }
+
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async delete(@Arg("id") id: number) {
+    const user = await User.findOne({ id });
+    if (!user) {
+      throw new Error("user not found");
+    }
+
+    try {
+      await User.delete(id);
+    } catch (error) {
+      console.error(error);
+      throw new Error("fail to delete user");
     }
 
     return true;
