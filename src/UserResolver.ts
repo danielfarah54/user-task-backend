@@ -6,7 +6,7 @@ import {
   ObjectType,
   Query,
   Resolver,
-  UseMiddleware,
+  // UseMiddleware,
 } from "type-graphql";
 import { compare, hash } from "bcrypt";
 import { getConnection } from "typeorm";
@@ -25,23 +25,12 @@ class LoginResponse {
 
 @Resolver()
 export class UserResolver {
-  // @Query(() => String)
-  // hello() {
-  //   return "hi!";
-  // }
-
-  // @Query(() => String)
-  // @UseMiddleware(isAuth)
-  // bye(@Ctx() { payload }: MyContext) {
-  //   console.log(payload);
-  //   return `your user id is ${payload!.userId}`;
-  // }
-
   @Query(() => [User])
   async users() {
     return User.find();
   }
 
+  // @UseMiddleware(isAuth)
   @Mutation(() => Boolean)
   async revokeRefreshTokensForUser(@Arg("userId") userId: number) {
     await getConnection()
@@ -54,12 +43,14 @@ export class UserResolver {
   @Mutation(() => Boolean)
   async register(
     @Arg("email") email: string,
-    @Arg("password") password: string
+    @Arg("password") password: string,
+    @Arg("name") name: string
   ) {
     const hashedPassword = await hash(password, 12);
 
     try {
       await User.insert({
+        name,
         email,
         password: hashedPassword,
       });
