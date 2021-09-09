@@ -80,7 +80,6 @@ export class UserResolver {
   @UseMiddleware(isAuth)
   @Mutation(() => Boolean)
   async updateUser(
-    // @Arg("id") id: number,
     @Arg("email") email: string,
     @Arg("name") name: string,
     @Ctx() { payload }: MyContext
@@ -103,15 +102,16 @@ export class UserResolver {
     return true;
   }
 
+  @UseMiddleware(isAuth)
   @Mutation(() => Boolean)
-  async deleteUser(@Arg("id") id: number) {
-    const user = await User.findOne({ id });
+  async deleteUser(@Ctx() { payload }: MyContext) {
+    const user = await User.findOne({ id: parseFloat(payload!.userId) });
     if (!user) {
       throw new Error("user not found");
     }
 
     try {
-      await User.delete(id);
+      await User.delete(payload!.userId);
     } catch (error) {
       console.error(error);
       throw new Error("fail to delete user");
