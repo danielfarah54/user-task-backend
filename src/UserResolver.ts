@@ -6,13 +6,13 @@ import {
   ObjectType,
   Query,
   Resolver,
-  // UseMiddleware,
+  UseMiddleware,
 } from "type-graphql";
 import { compare, hash } from "bcrypt";
 import { getConnection } from "typeorm";
 
 import { createRefreshToken, createAccessToken } from "./auth";
-// import { isAuth } from "./isAuth";
+import { isAuth } from "./isAuth";
 import { MyContext } from "./MyContext";
 import { sendRefreshToken } from "./sendRefreshToken";
 import { User } from "./entity/User";
@@ -30,12 +30,20 @@ export class UserResolver {
     return User.find();
   }
 
-  // @UseMiddleware(isAuth)
+  @Query(() => User)
+  async user(@Arg("id") userId: number) {
+    return await User.findOne({ id: userId });
+  }
+
+  @UseMiddleware(isAuth)
   @Mutation(() => Boolean)
-  async revokeRefreshTokensForUser(@Arg("userId") userId: number) {
+  async revokeRefreshTokensForUser(
+    // @Arg("userId") userId: number,
+    @Ctx() { payload }: MyContext
+  ) {
     await getConnection()
       .getRepository(User)
-      .increment({ id: userId }, "tokenVersion", 1);
+      .increment({ id: parseFloat(payload!.userId) }, "tokenVersion", 1);
 
     return true;
   }
@@ -57,6 +65,30 @@ export class UserResolver {
     } catch (error) {
       console.error(error);
       return false;
+    }
+
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async update(
+    @Arg("id") id: number,
+    @Arg("email") email: string,
+    @Arg("name") name: string
+  ) {
+    const user = await User.findOne({ id });
+    if(!user) {
+      throw new Error('user not found')
+    }
+
+    try {
+      await User.update(id, {
+        name,
+        email,
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('fail to update user')
     }
 
     return true;
