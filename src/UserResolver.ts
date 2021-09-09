@@ -77,19 +77,21 @@ export class UserResolver {
     return true;
   }
 
+  @UseMiddleware(isAuth)
   @Mutation(() => Boolean)
   async updateUser(
-    @Arg("id") id: number,
+    // @Arg("id") id: number,
     @Arg("email") email: string,
-    @Arg("name") name: string
+    @Arg("name") name: string,
+    @Ctx() { payload }: MyContext
   ) {
-    const user = await User.findOne({ id });
+    const user = await User.findOne({ id: parseFloat(payload!.userId) });
     if (!user) {
       throw new Error("user not found");
     }
 
     try {
-      await User.update(id, {
+      await User.update(payload!.userId, {
         name,
         email,
       });
