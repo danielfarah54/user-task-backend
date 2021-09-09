@@ -30,11 +30,12 @@ export class UserResolver {
     return await User.find();
   }
 
+  @UseMiddleware(isAuth)
   @Query(() => User)
-  async user(@Arg("id") userId: number) {
+  async user(@Ctx() { payload }: MyContext) {
     let user = null;
     try {
-      user = await User.findOneOrFail({ id: userId });
+      user = await User.findOneOrFail({ id: parseFloat(payload!.userId) });
     } catch (error) {
       console.log(error);
       throw new Error("could not find user");
@@ -44,10 +45,7 @@ export class UserResolver {
 
   @UseMiddleware(isAuth)
   @Mutation(() => Boolean)
-  async revokeRefreshTokensForUser(
-    // @Arg("userId") userId: number,
-    @Ctx() { payload }: MyContext
-  ) {
+  async revokeRefreshTokensForUser(@Ctx() { payload }: MyContext) {
     await getConnection()
       .getRepository(User)
       .increment({ id: parseFloat(payload!.userId) }, "tokenVersion", 1);
@@ -62,6 +60,10 @@ export class UserResolver {
     @Arg("name") name: string
   ) {
     const hashedPassword = await hash(password, 12);
+
+    if (await User.findOne({ email })) {
+      throw new Error("email already exists in database");
+    }
 
     try {
       await User.insert({
