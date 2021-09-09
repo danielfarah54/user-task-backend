@@ -27,7 +27,7 @@ class LoginResponse {
 export class UserResolver {
   @Query(() => [User])
   async users() {
-    return User.find();
+    return await User.find();
   }
 
   @Query(() => User)
@@ -56,7 +56,7 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  async register(
+  async registerUser(
     @Arg("email") email: string,
     @Arg("password") password: string,
     @Arg("name") name: string
@@ -78,7 +78,7 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  async update(
+  async updateUser(
     @Arg("id") id: number,
     @Arg("email") email: string,
     @Arg("name") name: string
@@ -102,7 +102,7 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  async delete(@Arg("id") id: number) {
+  async deleteUser(@Arg("id") id: number) {
     const user = await User.findOne({ id });
     if (!user) {
       throw new Error("user not found");

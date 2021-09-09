@@ -5,11 +5,12 @@ import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
-import { UserResolver } from "./UserResolver";
 import { verify } from "jsonwebtoken";
 
 import { createAccessToken, createRefreshToken } from "./auth";
 import { sendRefreshToken } from "./sendRefreshToken";
+import { TaskResolver } from './TaskResolver';
+import { UserResolver } from "./UserResolver";
 import { User } from "./entity/User";
 
 (async () => {
@@ -52,7 +53,7 @@ import { User } from "./entity/User";
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver],
+      resolvers: [UserResolver, TaskResolver],
     }),
     context: ({ req, res }) => ({ req, res }),
   });
