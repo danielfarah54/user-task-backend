@@ -9,7 +9,7 @@ import { verify } from "jsonwebtoken";
 
 import { createAccessToken, createRefreshToken } from "./auth";
 import { sendRefreshToken } from "./sendRefreshToken";
-import { TaskResolver } from './TaskResolver';
+import { TaskResolver } from "./TaskResolver";
 import { UserResolver } from "./UserResolver";
 import { User } from "./entity/User";
 
