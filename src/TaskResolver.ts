@@ -41,6 +41,31 @@ export class TaskResolver {
 
   @UseMiddleware(isAuth)
   @Mutation(() => Boolean)
+  async checkTask(@Arg("id") id: number, @Ctx() { payload }: MyContext) {
+    const task = await Task.findOne({
+      id,
+      userId: parseFloat(payload!.userId),
+    });
+    if (!task) {
+      throw new Error("task not found");
+    }
+
+    try {
+      await Task.update(id, {
+        name: task.name,
+        description: task.description,
+        completed: !task.completed,
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error("fail to update task");
+    }
+
+    return true;
+  }
+
+  @UseMiddleware(isAuth)
+  @Mutation(() => Boolean)
   async registerTask(
     @Arg("description") description: string,
     @Arg("name") name: string,
