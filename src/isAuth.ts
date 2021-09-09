@@ -3,7 +3,7 @@ import { verify } from "jsonwebtoken";
 
 import { MyContext } from "./MyContext";
 
-// token = bearer 1029jdpoqjweqpei
+// token should look like: bearer 1029jdpoqjweqpei
 
 export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
   const authorization = context.req.headers["authorization"];
