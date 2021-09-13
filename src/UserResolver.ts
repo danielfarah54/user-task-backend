@@ -30,6 +30,11 @@ export class UserResolver {
     return await User.find();
   }
 
+  @Query(() => [User])
+  async emails(@Arg("email") email: string) {
+    return await User.find({ email });
+  }
+
   @UseMiddleware(isAuth)
   @Query(() => User)
   async user(@Ctx() { payload }: MyContext) {
