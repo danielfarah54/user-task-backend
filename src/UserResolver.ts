@@ -21,6 +21,9 @@ import { User } from "./entity/User";
 class LoginResponse {
   @Field()
   accessToken: string;
+
+  @Field()
+  expiresIn: string;
 }
 
 @Resolver()
@@ -151,6 +154,7 @@ export class UserResolver {
 
     return {
       accessToken: createAccessToken(user),
+      expiresIn: "900",
     };
   }
 }
