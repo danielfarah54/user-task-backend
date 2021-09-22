@@ -93,11 +93,12 @@ export class TaskResolver {
     @Arg("name") name: string,
     @Ctx() { payload }: MyContext
   ) {
-    const task = await Task.findOne({
-      id,
-      userId: parseFloat(payload!.userId),
-    });
-    if (!task) {
+    try {
+      await Task.findOne({
+        id,
+        userId: parseFloat(payload!.userId),
+      });
+    } catch (error) {
       throw new Error("task not found");
     }
 

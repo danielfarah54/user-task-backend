@@ -23,6 +23,9 @@ class LoginResponse {
   accessToken: string;
 
   @Field()
+  userId: number;
+
+  @Field()
   expiresIn: string;
 }
 
@@ -154,6 +157,7 @@ export class UserResolver {
 
     return {
       accessToken: createAccessToken(user),
+      userId: user.id,
       expiresIn: "900",
     };
   }
