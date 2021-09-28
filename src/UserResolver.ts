@@ -158,7 +158,7 @@ export class UserResolver {
     return {
       accessToken: createAccessToken(user),
       userId: user.id.toString(),
-      expiresIn: "900",
+      expiresIn: "15",
     };
   }
 }
