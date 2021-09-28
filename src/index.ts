@@ -6,6 +6,7 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { verify } from "jsonwebtoken";
+import cors from "cors";
 
 import { createAccessToken, createRefreshToken } from "./auth";
 import { sendRefreshToken } from "./sendRefreshToken";
@@ -15,6 +16,12 @@ import { User } from "./entity/User";
 
 (async () => {
   const app = express();
+  app.use(
+    cors({
+      origin: "http://localhost:4200",
+      credentials: true,
+    })
+  );
 
   app.use(cookieParser());
 
@@ -60,7 +67,7 @@ import { User } from "./entity/User";
 
   await apolloServer.start();
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(process.env.SERVER_PORT, () =>
     console.log("express server started")
