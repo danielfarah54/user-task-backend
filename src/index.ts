@@ -53,7 +53,12 @@ import { User } from "./entity/User";
 
     sendRefreshToken(res, createRefreshToken(user));
 
-    return res.send({ ok: true, accessToken: createAccessToken(user) });
+    return res.send({
+      ok: true,
+      accessToken: createAccessToken(user),
+      userId: user.id.toString(),
+      expiresIn: "604800",
+    });
   });
 
   await createConnection();
